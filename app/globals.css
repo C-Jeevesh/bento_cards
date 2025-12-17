@@ -24,3 +24,13 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  /* This radial gradient is KEY for the glass effect */
+  background: radial-gradient(circle at 50% 0%, #1f1f23 0%, #000000 70%);
+  color: white;
+  min-height: 100vh;
+}
