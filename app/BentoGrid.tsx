@@ -17,7 +17,6 @@ type CardData = {
 export default function BentoGrid({ cards }: { cards: CardData[] }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  // 1. HELPER: Maps your DB colors to subtle gradients instead of flat backgrounds
   const getGradient = (colorClass: string) => {
     switch (colorClass) {
       case 'bg-purple-600': return 'from-purple-500/20 to-purple-500/0';
@@ -29,6 +28,7 @@ export default function BentoGrid({ cards }: { cards: CardData[] }) {
     }
   };
 
+  // Helper to render content for the SMALL card
   const renderCardContent = (card: CardData) => {
     switch (card.type) {
       case 'spotify':
@@ -36,10 +36,10 @@ export default function BentoGrid({ cards }: { cards: CardData[] }) {
           <div className="flex flex-col h-full justify-between z-20 relative">
              <div className="flex justify-between items-start">
                <Music className="bg-green-500/20 p-2 rounded-full w-10 h-10 text-green-400" />
-               <div className="animate-pulse flex gap-1">
-                 <div className="w-1 h-4 bg-green-400 rounded-full" />
-                 <div className="w-1 h-6 bg-green-400 rounded-full" />
-                 <div className="w-1 h-3 bg-green-400 rounded-full" />
+               <div className="flex gap-1">
+                 <div className="w-1 h-4 bg-green-400 rounded-full animate-pulse" />
+                 <div className="w-1 h-6 bg-green-400 rounded-full animate-pulse delay-75" />
+                 <div className="w-1 h-3 bg-green-400 rounded-full animate-pulse delay-150" />
                </div>
              </div>
              <div>
@@ -48,7 +48,6 @@ export default function BentoGrid({ cards }: { cards: CardData[] }) {
              </div>
           </div>
         );
-
       case 'social':
         return (
            <div className="flex flex-col h-full justify-center items-center text-center z-20 relative">
@@ -57,7 +56,6 @@ export default function BentoGrid({ cards }: { cards: CardData[] }) {
              <p className="text-sm text-zinc-500 mt-2">@yourname</p>
            </div>
         );
-
       case 'map':
         return (
           <div className="flex flex-col h-full justify-between z-20 relative">
@@ -68,7 +66,6 @@ export default function BentoGrid({ cards }: { cards: CardData[] }) {
              </div>
           </div>
         );
-
       case 'stack':
         return (
           <div className="flex flex-col h-full justify-between z-20 relative">
@@ -87,7 +84,6 @@ export default function BentoGrid({ cards }: { cards: CardData[] }) {
             </div>
           </div>
         );
-
       default:
         return (
           <div className="flex flex-col h-full justify-between z-20 relative">
@@ -113,10 +109,9 @@ export default function BentoGrid({ cards }: { cards: CardData[] }) {
           className={`
             relative overflow-hidden
             rounded-3xl p-6 cursor-pointer 
-            /* 2. THE GLASS STYLE: Dark, translucent, with a subtle border */
-            bg-zinc-900/40 backdrop-blur-md
+            bg-zinc-900/40 backdrop-blur-md 
             border border-white/10 hover:border-white/20
-            group
+            group transform-gpu
           `}
           style={{
             gridColumn: `span ${card.col_span}`,
@@ -124,47 +119,44 @@ export default function BentoGrid({ cards }: { cards: CardData[] }) {
           }}
           whileHover={{ y: -4, transition: { duration: 0.2 } }}
         >
-          {/* 3. HOVER GLOW: Uses your DB color to create a gradient light source */}
-          <div 
-            className={`
-                absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-500
-                ${getGradient(card.bg_color)}
-            `} 
-          />
+          {/* Background Glow */}
+          <div className={`absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity duration-500 ${getGradient(card.bg_color)}`} />
           
-          {/* 4. NOISE TEXTURE: Adds that "Premium" gritty feel */}
-          <div className="absolute inset-0 opacity-[0.05] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] pointer-events-none" />
-
-          {/* Render Unique Content */}
-          {renderCardContent(card)}
+          {/* LAG FIX 1: We wrap the small content in a motion.div
+             We do NOT give this a layoutId. This means it won't try to morph.
+             It will just disappear when the card opens.
+          */}
+          <motion.div className="h-full">
+            {renderCardContent(card)}
+          </motion.div>
         </motion.div>
       ))}
 
-      {/* EXPANDED MODAL */}
       <AnimatePresence>
         {selectedId && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            {/* Backdrop */}
             <motion.div 
               initial={{ opacity: 0 }} 
               animate={{ opacity: 1 }} 
               exit={{ opacity: 0 }}
-              className="absolute inset-0 bg-black/90 backdrop-blur-md"
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
               onClick={() => setSelectedId(null)} 
             />
             
             {cards.filter(c => c.id === selectedId).map(card => (
               <motion.div
-                layoutId={`card-${card.id}`}
+                layoutId={`card-${card.id}`} // Only the CONTAINER morphs
                 key={card.id}
                 className={`
                   bg-zinc-900 border border-white/10
                   w-full max-w-2xl h-[60vh] md:h-[500px]
                   rounded-3xl p-8 
                   flex flex-col relative z-10 
-                  overflow-hidden
+                  overflow-hidden transform-gpu
                 `}
+                transition={{ type: "spring", stiffness: 280, damping: 24 }}
               >
-                {/* Modal Glow */}
                 <div className={`absolute top-0 left-0 w-full h-32 bg-gradient-to-b ${getGradient(card.bg_color)} opacity-20`} />
                 
                 <button
@@ -174,13 +166,21 @@ export default function BentoGrid({ cards }: { cards: CardData[] }) {
                   <X size={20} />
                 </button>
 
-                <div className="mt-8 relative z-10">
+                {/* LAG FIX 2: The expanded content simply fades in.
+                   It does NOT try to "reshape" from the small text. 
+                */}
+                <motion.div 
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1, duration: 0.3 }}
+                  className="mt-8 relative z-10"
+                >
                    <h2 className="text-4xl font-bold text-white mb-2">{card.title}</h2>
                    <div className="w-20 h-1 bg-zinc-700 mb-6 rounded-full" />
                    <p className="text-lg text-zinc-300 leading-relaxed">
                      {card.content}
                    </p>
-                </div>
+                </motion.div>
               </motion.div>
             ))}
           </div>
