@@ -53,7 +53,7 @@ export default function BentoGrid({ cards }: { cards: CardData[] }) {
            <div className="flex flex-col h-full justify-center items-center text-center z-20 relative">
              <Github className="w-16 h-16 mb-4 text-zinc-200 group-hover:text-white transition-colors" />
              <h3 className="font-bold text-xl text-zinc-100">{card.title}</h3>
-             <p className="text-sm text-zinc-500 mt-2">@yourname</p>
+             <p className="text-sm text-zinc-500 mt-2">C-Jeevesh</p>
            </div>
         );
       case 'map':
@@ -61,8 +61,8 @@ export default function BentoGrid({ cards }: { cards: CardData[] }) {
           <div className="flex flex-col h-full justify-between z-20 relative">
              <MapPin className="text-red-400 w-8 h-8" />
              <div>
-                <h3 className="font-bold text-2xl text-zinc-100">San Francisco</h3>
-                <p className="text-zinc-500 text-sm">CA, United States</p>
+                <h3 className="font-bold text-2xl text-zinc-100">Mangalore</h3>
+                <p className="text-zinc-500 text-sm">Mangalore</p>
              </div>
           </div>
         );
