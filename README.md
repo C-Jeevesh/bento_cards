@@ -5,7 +5,7 @@
 
 A high-performance, full-stack personal portfolio featuring a dynamic "Bento Grid" layout. It uses **Shared Layout Animations** for seamless expansions and a **Real-time Database** to manage content dynamically.
 
-[**View Live Demo**]YET TO DEPLOY!!!(https://your-vercel-link-here.app) ---
+[**View Live Demo**]YET TO DEPLOY!!!
 
 ## ✨ Features
 
