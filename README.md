@@ -1,11 +1,11 @@
 # 🍱 Interactive Bento Portfolio
 
-![Project Status](https://img.shields.io/badge/Status-Completed-success)
+![Project Status](https://img.shields.io/badge/Status-Working-incomplete)
 ![Tech Stack](https://img.shields.io/badge/Stack-Next.js_15_|_Supabase_|_Framer_Motion-blueviolet)
 
 A high-performance, full-stack personal portfolio featuring a dynamic "Bento Grid" layout. It uses **Shared Layout Animations** for seamless expansions and a **Real-time Database** to manage content dynamically.
 
-[**View Live Demo**](https://your-vercel-link-here.app) ---
+[**View Live Demo**]YET TO DEPLOY!!!(https://your-vercel-link-here.app) ---
 
 ## ✨ Features
 
